@@ -47,3 +47,8 @@ Each mood uses different drum, bass, lead and variation patterns.
 ### Mini Piano
 
 A small piano keyboard is included so users can click notes and hear them.
+
+
+### Screenshot
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/0c4121e9-d036-402d-b3f2-4897ef69c5b1" />
+
