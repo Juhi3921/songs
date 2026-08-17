@@ -1,3 +1,13 @@
+/* =========================================
+   NEON NIGHT
+   HTML + CSS + JavaScript + Strudel
+========================================= */
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
 const playButton = document.getElementById("playButton");
 const stopButton = document.getElementById("stopButton");
 
@@ -8,6 +18,9 @@ const status = document.getElementById("status");
 const currentTime = document.getElementById("currentTime");
 const progressBar = document.getElementById("progressBar");
 const visualizer = document.getElementById("visualizer");
+
+const currentMood = document.getElementById("currentMood");
+const moodButtons = document.querySelectorAll(".mood-btn");
 
 const drumVolume = document.getElementById("drumVolume");
 const bassVolume = document.getElementById("bassVolume");
@@ -29,33 +42,27 @@ const toolStatus = document.getElementById("toolStatus");
 
 const pianoStatus = document.getElementById("pianoStatus");
 
-const currentMood = document.getElementById("currentMood");
-const moodButtons = document.querySelectorAll(".mood-btn");
 
-
-let timer = null;
-let startTime = null;
-let isPlaying = false;
-let mixerUpdateTimer = null;
+/* =========================================
+   STATE
+========================================= */
 
 let selectedMood = "happy";
 
+let isPlaying = false;
 
-/* =================================
-   STRUDEL
-================================= */
+let startTime = null;
 
-initStrudel({
+let timer = null;
 
-    prebake: () =>
-        samples("github:tidalcycles/dirt-samples")
+let mixerTimer = null;
 
-});
+let audioReady = false;
 
 
-/* =================================
-   MOODS
-================================= */
+/* =========================================
+   MOOD PATTERNS
+========================================= */
 
 const moodPatterns = {
 
@@ -146,9 +153,84 @@ const moodPatterns = {
 };
 
 
-/* =================================
-   VOLUMES
-================================= */
+/* =========================================
+   STRUDEL INITIALIZATION
+========================================= */
+
+initStrudel({
+
+    prebake: () => {
+
+        samples(
+            "github:tidalcycles/dirt-samples"
+        );
+
+    }
+
+});
+
+
+/* =========================================
+   AUDIO CONTEXT
+========================================= */
+
+async function prepareAudio() {
+
+    try {
+
+        if (
+            typeof getAudioContext ===
+            "function"
+        ) {
+
+            const ctx =
+                getAudioContext();
+
+
+            console.log(
+                "Strudel AudioContext:",
+                ctx.state
+            );
+
+
+            if (
+                ctx.state !==
+                "running"
+            ) {
+
+                await ctx.resume();
+
+            }
+
+
+            audioReady =
+                ctx.state === "running";
+
+
+            console.log(
+                "Audio ready:",
+                audioReady
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Audio initialization failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   GET MIXER VALUES
+========================================= */
 
 function getVolumes() {
 
@@ -164,34 +246,68 @@ function getVolumes() {
             Number(leadVolume.value) / 100,
 
         variation:
-            Number(variationVolume.value) / 100
+            Number(
+                variationVolume.value
+            ) / 100
 
     };
 
 }
 
 
-/* =================================
-   CREATE SONG
-================================= */
+/* =========================================
+   CREATE STRUDEL SONG
+========================================= */
 
 function createSong() {
 
-    const volume = getVolumes();
-
-    const mood = moodPatterns[selectedMood];
-
-
-    const leadSound =
-        selectedMood === "mysterious"
-            ? "sine"
-            : "triangle";
+    const volume =
+        getVolumes();
 
 
-    const filter =
-        selectedMood === "dark"
-            ? 500
-            : 800;
+    const mood =
+        moodPatterns[selectedMood];
+
+
+    let leadSound =
+        "triangle";
+
+
+    if (
+        selectedMood ===
+        "mysterious"
+    ) {
+
+        leadSound =
+            "sine";
+
+    }
+
+
+    let filter =
+        900;
+
+
+    if (
+        selectedMood ===
+        "dark"
+    ) {
+
+        filter =
+            500;
+
+    }
+
+
+    if (
+        selectedMood ===
+        "chill"
+    ) {
+
+        filter =
+            700;
+
+    }
 
 
     return stack(
@@ -199,7 +315,9 @@ function createSong() {
         /* DRUMS */
 
         s(mood.drums)
-            .gain(volume.drums),
+            .gain(
+                volume.drums
+            ),
 
 
         /* BASS */
@@ -207,7 +325,9 @@ function createSong() {
         note(mood.bass)
             .s("sawtooth")
             .lpf(filter)
-            .gain(volume.bass),
+            .gain(
+                volume.bass
+            ),
 
 
         /* LEAD */
@@ -216,28 +336,35 @@ function createSong() {
             .s(leadSound)
             .attack(0.02)
             .release(0.2)
-            .gain(volume.lead),
+            .gain(
+                volume.lead
+            ),
 
 
         /* VARIATION */
 
         s(mood.variation)
-            .gain(volume.variation)
+            .gain(
+                volume.variation
+            )
 
     );
 
 }
 
 
-/* =================================
-   LIVE CODE
-================================= */
+/* =========================================
+   CREATE LIVE STRUDEL CODE
+========================================= */
 
 function createSongCode() {
 
-    const volume = getVolumes();
+    const volume =
+        getVolumes();
 
-    const mood = moodPatterns[selectedMood];
+
+    const mood =
+        moodPatterns[selectedMood];
 
 
     const leadSound =
@@ -246,14 +373,33 @@ function createSongCode() {
             : "triangle";
 
 
-    const filter =
-        selectedMood === "dark"
-            ? 500
-            : 800;
+    let filter =
+        900;
 
 
-    return `
-setcpm(120/4)
+    if (
+        selectedMood ===
+        "dark"
+    ) {
+
+        filter =
+            500;
+
+    }
+
+
+    if (
+        selectedMood ===
+        "chill"
+    ) {
+
+        filter =
+            700;
+
+    }
+
+
+    return `setcpm(120/4)
 
 stack(
 
@@ -277,35 +423,49 @@ stack(
   // VARIATION
   s("${mood.variation}")
     .gain(${volume.variation.toFixed(2)})
-)
-`.trim();
+
+)`;
 
 }
 
+
+/* =========================================
+   UPDATE CODE DISPLAY
+========================================= */
 
 function updateCode() {
 
-    if (codeDisplay) {
+    if (!codeDisplay) {
 
-        codeDisplay.textContent =
-            createSongCode();
+        return;
 
     }
+
+
+    codeDisplay.textContent =
+        createSongCode();
 
 }
 
 
-/* =================================
+/* =========================================
    STOP STRUDEL
-================================= */
+========================================= */
 
 function stopMusic() {
 
     try {
 
+        /*
+         * Strudel's official
+         * stop function.
+         */
+
         hush();
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.log(
             "Strudel stop:",
@@ -317,14 +477,12 @@ function stopMusic() {
 
     isPlaying = false;
 
-
     clearInterval(timer);
 
     timer = null;
 
-
     clearTimeout(
-        mixerUpdateTimer
+        mixerTimer
     );
 
 
@@ -347,9 +505,9 @@ function stopMusic() {
 }
 
 
-/* =================================
-   PLAY
-================================= */
+/* =========================================
+   PLAY SONG
+========================================= */
 
 if (playButton) {
 
@@ -360,15 +518,32 @@ if (playButton) {
             try {
 
                 /*
-                 * Stop anything
-                 * already playing
+                 * Browser audio must
+                 * start from a user action.
                  */
 
-                stopMusic();
+                await prepareAudio();
 
 
                 /*
-                 * Create pattern
+                 * Stop previous pattern.
+                 */
+
+                try {
+
+                    hush();
+
+                }
+
+                catch (error) {
+
+                    console.log(error);
+
+                }
+
+
+                /*
+                 * Create new song.
                  */
 
                 const song =
@@ -376,21 +551,19 @@ if (playButton) {
 
 
                 /*
-                 * Start pattern
+                 * Start Strudel.
                  */
 
                 song.play();
 
 
-                isPlaying = true;
+                isPlaying =
+                    true;
+
 
                 startTime =
                     Date.now();
 
-
-                /*
-                 * Start timer
-                 */
 
                 clearInterval(timer);
 
@@ -401,10 +574,6 @@ if (playButton) {
                         100
                     );
 
-
-                /*
-                 * UI
-                 */
 
                 if (status) {
 
@@ -448,9 +617,9 @@ if (playButton) {
 }
 
 
-/* =================================
+/* =========================================
    STOP BUTTON
-================================= */
+========================================= */
 
 if (stopButton) {
 
@@ -482,13 +651,16 @@ if (stopButton) {
 }
 
 
-/* =================================
-   TIMER
-================================= */
+/* =========================================
+   30 SECOND TIMER
+========================================= */
 
 function updateTime() {
 
-    if (!isPlaying || !startTime) {
+    if (
+        !isPlaying ||
+        !startTime
+    ) {
 
         return;
 
@@ -497,11 +669,20 @@ function updateTime() {
 
     const elapsed =
         Math.floor(
-            (Date.now() - startTime) / 1000
+            (
+                Date.now() -
+                startTime
+            ) / 1000
         );
 
 
-    if (elapsed >= 30) {
+    /*
+     * Stop after 30 seconds.
+     */
+
+    if (
+        elapsed >= 30
+    ) {
 
         stopMusic();
 
@@ -535,11 +716,17 @@ function updateTime() {
     }
 
 
+    /*
+     * Update clock.
+     */
+
     if (currentTime) {
 
         currentTime.textContent =
             "00:" +
-            String(elapsed).padStart(
+            String(
+                elapsed
+            ).padStart(
                 2,
                 "0"
             );
@@ -547,10 +734,16 @@ function updateTime() {
     }
 
 
+    /*
+     * Update progress.
+     */
+
     if (progressBar) {
 
         progressBar.style.width =
-            (elapsed / 30) * 100 +
+            (
+                elapsed / 30
+            ) * 100 +
             "%";
 
     }
@@ -558,9 +751,9 @@ function updateTime() {
 }
 
 
-/* =================================
-   THEME
-================================= */
+/* =========================================
+   THEME - DARK
+========================================= */
 
 if (darkBtn) {
 
@@ -578,6 +771,10 @@ if (darkBtn) {
 }
 
 
+/* =========================================
+   THEME - NEON
+========================================= */
+
 if (neonBtn) {
 
     neonBtn.addEventListener(
@@ -594,16 +791,65 @@ if (neonBtn) {
 }
 
 
-/* =================================
-   MIXER
-================================= */
+/* =========================================
+   UPDATE MIXER LABELS
+========================================= */
+
+function updateMixerLabels() {
+
+    if (drumValue) {
+
+        drumValue.textContent =
+            drumVolume.value +
+            "%";
+
+    }
+
+
+    if (bassValue) {
+
+        bassValue.textContent =
+            bassVolume.value +
+            "%";
+
+    }
+
+
+    if (leadValue) {
+
+        leadValue.textContent =
+            leadVolume.value +
+            "%";
+
+    }
+
+
+    if (variationValue) {
+
+        variationValue.textContent =
+            variationVolume.value +
+            "%";
+
+    }
+
+}
+
+
+/* =========================================
+   LIVE MIXER UPDATE
+========================================= */
 
 function updateMixer() {
 
-    updateLabels();
+    updateMixerLabels();
 
     updateCode();
 
+
+    /*
+     * If song isn't playing,
+     * just update the UI.
+     */
 
     if (!isPlaying) {
 
@@ -613,33 +859,36 @@ function updateMixer() {
 
 
     clearTimeout(
-        mixerUpdateTimer
+        mixerTimer
     );
 
 
-    mixerUpdateTimer =
+    mixerTimer =
         setTimeout(
             () => {
 
                 /*
-                 * Remember position
+                 * Remember current position.
                  */
 
                 const elapsed =
-                    (Date.now() -
-                        startTime) /
-                    1000;
+                    (
+                        Date.now() -
+                        startTime
+                    ) / 1000;
 
 
                 /*
-                 * Stop old pattern
+                 * Stop current pattern.
                  */
 
                 try {
 
                     hush();
 
-                } catch (error) {
+                }
+
+                catch (error) {
 
                     console.log(error);
 
@@ -647,26 +896,35 @@ function updateMixer() {
 
 
                 /*
-                 * Start new pattern
+                 * Start pattern
+                 * with new volume.
                  */
 
                 createSong().play();
 
 
                 /*
-                 * Keep timer position
+                 * Keep the timer
+                 * at the same position.
                  */
 
                 startTime =
                     Date.now() -
-                    elapsed * 1000;
+                    (
+                        elapsed *
+                        1000
+                    );
 
             },
-            150
+            120
         );
 
 }
 
+
+/* =========================================
+   MIXER EVENTS
+========================================= */
 
 if (drumVolume) {
 
@@ -705,53 +963,12 @@ if (variationVolume) {
         updateMixer
     );
 
-
 }
 
 
-/* =================================
-   MIXER LABELS
-================================= */
-
-function updateLabels() {
-
-    if (drumValue) {
-
-        drumValue.textContent =
-            drumVolume.value + "%";
-
-    }
-
-
-    if (bassValue) {
-
-        bassValue.textContent =
-            bassVolume.value + "%";
-
-    }
-
-
-    if (leadValue) {
-
-        leadValue.textContent =
-            leadVolume.value + "%";
-
-    }
-
-
-    if (variationValue) {
-
-        variationValue.textContent =
-            variationVolume.value + "%";
-
-    }
-
-}
-
-
-/* =================================
-   MOOD
-================================= */
+/* =========================================
+   MOOD BUTTONS
+========================================= */
 
 moodButtons.forEach(
     button => {
@@ -764,6 +981,10 @@ moodButtons.forEach(
                     button.dataset.mood;
 
 
+                /*
+                 * Update text.
+                 */
+
                 if (currentMood) {
 
                     currentMood.textContent =
@@ -771,6 +992,10 @@ moodButtons.forEach(
 
                 }
 
+
+                /*
+                 * Active button.
+                 */
 
                 moodButtons.forEach(
                     item => {
@@ -793,22 +1018,25 @@ moodButtons.forEach(
 
                 /*
                  * Change music
-                 * immediately
+                 * immediately.
                  */
 
                 if (isPlaying) {
 
                     const elapsed =
-                        (Date.now() -
-                            startTime) /
-                        1000;
+                        (
+                            Date.now() -
+                            startTime
+                        ) / 1000;
 
 
                     try {
 
                         hush();
 
-                    } catch (error) {
+                    }
+
+                    catch (error) {
 
                         console.log(error);
 
@@ -820,7 +1048,10 @@ moodButtons.forEach(
 
                     startTime =
                         Date.now() -
-                        elapsed * 1000;
+                        (
+                            elapsed *
+                            1000
+                        );
 
                 }
 
@@ -831,9 +1062,9 @@ moodButtons.forEach(
 );
 
 
-/* =================================
-   COPY STRUDEL
-================================= */
+/* =========================================
+   COPY STRUDEL CODE
+========================================= */
 
 if (copyButton) {
 
@@ -843,15 +1074,19 @@ if (copyButton) {
 
             try {
 
+                const code =
+                    createSongCode();
+
+
                 await navigator.clipboard.writeText(
-                    createSongCode()
+                    code
                 );
 
 
                 if (toolStatus) {
 
                     toolStatus.textContent =
-                        "Strudel code copied.";
+                        "Strudel code copied!";
 
                 }
 
@@ -859,7 +1094,18 @@ if (copyButton) {
 
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    "Copy failed:",
+                    error
+                );
+
+
+                if (toolStatus) {
+
+                    toolStatus.textContent =
+                        "Could not copy code.";
+
+                }
 
             }
 
@@ -869,9 +1115,9 @@ if (copyButton) {
 }
 
 
-/* =================================
-   DOWNLOAD
-================================= */
+/* =========================================
+   DOWNLOAD STRUDEL FILE
+========================================= */
 
 if (downloadButton) {
 
@@ -879,9 +1125,13 @@ if (downloadButton) {
         "click",
         () => {
 
+            const code =
+                createSongCode();
+
+
             const file =
                 new Blob(
-                    [createSongCode()],
+                    [code],
                     {
                         type:
                             "text/plain"
@@ -890,7 +1140,9 @@ if (downloadButton) {
 
 
             const url =
-                URL.createObjectURL(file);
+                URL.createObjectURL(
+                    file
+                );
 
 
             const link =
@@ -899,7 +1151,8 @@ if (downloadButton) {
                 );
 
 
-            link.href = url;
+            link.href =
+                url;
 
 
             link.download =
@@ -935,9 +1188,9 @@ if (downloadButton) {
 }
 
 
-/* =================================
-   SHARE
-================================= */
+/* =========================================
+   SHARE COMPOSITION
+========================================= */
 
 if (shareButton) {
 
@@ -946,31 +1199,37 @@ if (shareButton) {
         async () => {
 
             const params =
-                new URLSearchParams({
+                new URLSearchParams();
 
-                    drums:
-                        drumVolume.value,
 
-                    bass:
-                        bassVolume.value,
+            params.set(
+                "mood",
+                selectedMood
+            );
 
-                    lead:
-                        leadVolume.value,
 
-                    variation:
-                        variationVolume.value,
+            params.set(
+                "drums",
+                drumVolume.value
+            );
 
-                    mood:
-                        selectedMood,
 
-                    theme:
-                        document.body.classList.contains(
-                            "neon"
-                        )
-                            ? "neon"
-                            : "dark"
+            params.set(
+                "bass",
+                bassVolume.value
+            );
 
-                });
+
+            params.set(
+                "lead",
+                leadVolume.value
+            );
+
+
+            params.set(
+                "variation",
+                variationVolume.value
+            );
 
 
             const shareURL =
@@ -990,13 +1249,19 @@ if (shareButton) {
                 if (toolStatus) {
 
                     toolStatus.textContent =
-                        "Share link copied.";
+                        "Share link copied!";
 
                 }
 
             }
 
             catch (error) {
+
+                console.error(
+                    "Share failed:",
+                    error
+                );
+
 
                 if (toolStatus) {
 
@@ -1013,19 +1278,143 @@ if (shareButton) {
 }
 
 
-/* =================================
+/* =========================================
+   LOAD SHARED SETTINGS
+========================================= */
+
+function loadSharedSettings() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const mood =
+        params.get("mood");
+
+
+    if (
+        mood &&
+        moodPatterns[mood]
+    ) {
+
+        selectedMood =
+            mood;
+
+
+        moodButtons.forEach(
+            button => {
+
+                button.classList.remove(
+                    "active"
+                );
+
+
+                if (
+                    button.dataset.mood ===
+                    mood
+                ) {
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+        if (currentMood) {
+
+            currentMood.textContent =
+                mood.toUpperCase();
+
+        }
+
+    }
+
+
+    const settings = [
+
+        [
+            "drums",
+            drumVolume
+        ],
+
+        [
+            "bass",
+            bassVolume
+        ],
+
+        [
+            "lead",
+            leadVolume
+        ],
+
+        [
+            "variation",
+            variationVolume
+        ]
+
+    ];
+
+
+    settings.forEach(
+        ([name, input]) => {
+
+            const value =
+                params.get(name);
+
+
+            if (
+                value !== null &&
+                input
+            ) {
+
+                const number =
+                    Number(value);
+
+
+                if (
+                    number >= 0 &&
+                    number <= 100
+                ) {
+
+                    input.value =
+                        number;
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
    MINI PIANO
-================================= */
+========================================= */
 
 const noteFrequencies = {
 
     C4: 261.63,
+
     D4: 293.66,
+
     E4: 329.63,
+
     F4: 349.23,
+
     G4: 392.00,
+
     A4: 440.00,
+
     B4: 493.88,
+
     C5: 523.25
 
 };
@@ -1034,7 +1423,11 @@ const noteFrequencies = {
 let pianoAudio = null;
 
 
-function playPianoNote(note) {
+/* =========================================
+   PIANO AUDIO
+========================================= */
+
+function getPianoAudio() {
 
     if (!pianoAudio) {
 
@@ -1047,73 +1440,100 @@ function playPianoNote(note) {
     }
 
 
-    if (
-        pianoAudio.state ===
-        "suspended"
-    ) {
-
-        pianoAudio.resume();
-
-    }
-
-
-    const oscillator =
-        pianoAudio.createOscillator();
-
-
-    const gain =
-        pianoAudio.createGain();
-
-
-    oscillator.type =
-        "triangle";
-
-
-    oscillator.frequency.value =
-        noteFrequencies[note];
-
-
-    gain.gain.setValueAtTime(
-        0,
-        pianoAudio.currentTime
-    );
-
-
-    gain.gain.linearRampToValueAtTime(
-        0.3,
-        pianoAudio.currentTime +
-        0.02
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        pianoAudio.currentTime +
-        0.7
-    );
-
-
-    oscillator.connect(gain);
-
-    gain.connect(
-        pianoAudio.destination
-    );
-
-
-    oscillator.start();
-
-
-    oscillator.stop(
-        pianoAudio.currentTime +
-        0.7
-    );
+    return pianoAudio;
 
 }
 
 
-/* =================================
+async function playPianoNote(note) {
+
+    try {
+
+        const audio =
+            getPianoAudio();
+
+
+        if (
+            audio.state ===
+            "suspended"
+        ) {
+
+            await audio.resume();
+
+        }
+
+
+        const oscillator =
+            audio.createOscillator();
+
+
+        const gain =
+            audio.createGain();
+
+
+        oscillator.type =
+            "triangle";
+
+
+        oscillator.frequency.value =
+            noteFrequencies[note];
+
+
+        gain.gain.setValueAtTime(
+            0.001,
+            audio.currentTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.25,
+            audio.currentTime +
+            0.02
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audio.currentTime +
+            0.7
+        );
+
+
+        oscillator.connect(
+            gain
+        );
+
+
+        gain.connect(
+            audio.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            audio.currentTime +
+            0.7
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Piano audio error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
    PIANO BUTTONS
-================================= */
+========================================= */
 
 document
     .querySelectorAll(".key")
@@ -1122,13 +1542,13 @@ document
 
             key.addEventListener(
                 "click",
-                () => {
+                async () => {
 
                     const note =
                         key.dataset.note;
 
 
-                    playPianoNote(
+                    await playPianoNote(
                         note
                     );
 
@@ -1165,19 +1585,26 @@ document
     );
 
 
-/* =================================
-   KEYBOARD PIANO
-================================= */
+/* =========================================
+   COMPUTER KEYBOARD PIANO
+========================================= */
 
 const keyboardNotes = {
 
     a: "C4",
+
     s: "D4",
+
     d: "E4",
+
     f: "F4",
+
     g: "G4",
+
     h: "A4",
+
     j: "B4",
+
     k: "C5"
 
 };
@@ -1185,12 +1612,29 @@ const keyboardNotes = {
 
 document.addEventListener(
     "keydown",
-    event => {
+    async event => {
+
+        /*
+         * Don't trigger piano
+         * while typing in inputs.
+         */
+
+        if (
+            event.target.tagName ===
+            "INPUT"
+        ) {
+
+            return;
+
+        }
+
+
+        const key =
+            event.key.toLowerCase();
+
 
         const note =
-            keyboardNotes[
-                event.key.toLowerCase()
-            ];
+            keyboardNotes[key];
 
 
         if (!note) {
@@ -1200,18 +1644,20 @@ document.addEventListener(
         }
 
 
-        playPianoNote(note);
+        await playPianoNote(
+            note
+        );
 
 
-        const key =
+        const pianoKey =
             document.querySelector(
                 `[data-note="${note}"]`
             );
 
 
-        if (key) {
+        if (pianoKey) {
 
-            key.classList.add(
+            pianoKey.classList.add(
                 "active"
             );
 
@@ -1219,7 +1665,7 @@ document.addEventListener(
             setTimeout(
                 () => {
 
-                    key.classList.remove(
+                    pianoKey.classList.remove(
                         "active"
                     );
 
@@ -1233,10 +1679,33 @@ document.addEventListener(
 );
 
 
-/* =================================
-   START
-================================= */
+/* =========================================
+   INITIALIZE UI
+========================================= */
 
-updateLabels();
+loadSharedSettings();
+
+updateMixerLabels();
 
 updateCode();
+
+
+if (currentMood) {
+
+    currentMood.textContent =
+        selectedMood.toUpperCase();
+
+}
+
+
+/* =========================================
+   CONSOLE MESSAGE
+========================================= */
+
+console.log(
+    "NEON NIGHT loaded successfully."
+);
+
+console.log(
+    "Strudel custom UI ready."
+);
