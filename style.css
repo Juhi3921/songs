@@ -364,3 +364,612 @@ button:hover {
 }
 
 
+/* MIXER */
+
+.mixer {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+}
+
+
+.mixer h2 {
+
+    font-size: 18px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.mix-row {
+
+    display: grid;
+
+    grid-template-columns: 150px 1fr 55px;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 0;
+
+    border-top: 1px solid var(--border);
+
+}
+
+
+.mix-info {
+
+    display: flex;
+
+    gap: 15px;
+
+    align-items: center;
+
+}
+
+
+.mix-info span {
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+}
+
+
+.mix-info strong {
+
+    letter-spacing: 1px;
+
+}
+
+
+.mix-row > span:last-child {
+
+    color: var(--muted);
+
+    text-align: right;
+
+}
+
+
+input[type="range"] {
+
+    width: 100%;
+
+    accent-color: var(--accent);
+
+    cursor: pointer;
+
+}
+
+
+/* PIANO */
+
+.piano-section {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+}
+
+
+.piano {
+
+    display: grid;
+
+    grid-template-columns: repeat(8, 1fr);
+
+    gap: 5px;
+
+    height: 150px;
+
+}
+
+
+.key {
+
+    height: 150px;
+
+    background: #eeeeee;
+
+    color: #111111;
+
+    border: 1px solid #999;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    padding-bottom: 15px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+}
+
+
+.key:hover {
+
+    background: #cccccc;
+
+}
+
+
+.key.active {
+
+    background: var(--accent);
+
+    color: var(--bg);
+
+    transform: translateY(4px);
+
+}
+
+
+.piano-status {
+
+    margin-top: 15px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+}
+
+
+/* TOOLS */
+
+.tools {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+}
+
+
+.tools h2 {
+
+    font-size: 18px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.tool-buttons {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+
+.tool-buttons button {
+
+    background: transparent;
+
+    color: var(--text);
+
+    border: 1px solid var(--border);
+
+}
+
+
+.tool-buttons button:hover {
+
+    background: var(--text);
+
+    color: var(--bg);
+
+}
+
+
+#toolStatus {
+
+    margin-top: 18px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+}
+
+
+/* RATING */
+
+.rating-section {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    display: none;
+
+}
+
+
+.rating-section.show {
+
+    display: block;
+
+}
+
+
+.rating-section h2 {
+
+    font-size: 20px;
+
+    letter-spacing: 4px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.stars {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+
+.star {
+
+    background: transparent;
+
+    border: none;
+
+    color: var(--muted);
+
+    font-size: 35px;
+
+    padding: 5px;
+
+    cursor: pointer;
+
+}
+
+
+.star:hover,
+.star.selected {
+
+    color: var(--text);
+
+}
+
+
+.rating-section p {
+
+    color: var(--muted);
+
+    margin-top: 15px;
+
+    font-size: 13px;
+
+}
+
+
+/* PARTS */
+
+.parts {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 1px;
+
+    background: var(--border);
+
+    margin-top: 30px;
+
+}
+
+
+.part {
+
+    background: var(--card);
+
+    padding: 25px;
+
+}
+
+
+.part > span {
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+}
+
+
+.part h2 {
+
+    margin: 8px 0;
+
+    letter-spacing: 2px;
+
+}
+
+
+.part p {
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+}
+
+
+/* STRUDEL CODE */
+
+.code-section {
+
+    margin-top: 30px;
+
+}
+
+
+.code-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+
+}
+
+
+.code-heading h2 {
+
+    letter-spacing: 2px;
+
+    font-size: 18px;
+
+}
+
+
+.code-heading span {
+
+    border: 1px solid var(--border);
+
+    padding: 5px 10px;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+}
+
+
+pre {
+
+    background: #050505;
+
+    border: 1px solid var(--border);
+
+    padding: 20px;
+
+    overflow-x: auto;
+
+    color: var(--text);
+
+    line-height: 1.7;
+
+    font-size: 13px;
+
+}
+
+
+/* FOOTER */
+
+footer {
+
+    text-align: center;
+
+    padding: 35px 0 10px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+}
+
+
+/* NEON THEME */
+
+body.neon {
+
+    --bg: #05000d;
+
+    --card: #0d0718;
+
+    --border: #6426a8;
+
+    --text: #f5eaff;
+
+    --muted: #a78bc0;
+
+    --accent: #ff35d0;
+
+}
+
+
+body.neon h1 {
+
+    text-shadow:
+        0 0 8px #ff35d0,
+        0 0 25px #ff35d0;
+
+}
+
+
+body.neon .player,
+body.neon .mixer,
+body.neon .piano-section,
+body.neon .mood-section,
+body.neon .tools,
+body.neon .rating-section,
+body.neon .part {
+
+    box-shadow:
+        0 0 20px rgba(255, 53, 208, 0.08);
+
+}
+
+
+body.neon button {
+
+    box-shadow:
+        0 0 12px rgba(255, 53, 208, 0.25);
+
+}
+
+
+body.neon .code-heading span {
+
+    color: #ff35d0;
+
+    border-color: #ff35d0;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    body {
+
+        padding: 25px 15px;
+
+    }
+
+
+    h1 {
+
+        font-size: 38px;
+
+        letter-spacing: 4px;
+
+    }
+
+
+    .parts {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .mix-row {
+
+        grid-template-columns: 115px 1fr 45px;
+
+    }
+
+
+    .player {
+
+        padding: 20px;
+
+    }
+
+
+    .piano {
+
+        height: 120px;
+
+        gap: 2px;
+
+    }
+
+
+    .key {
+
+        height: 120px;
+
+        padding-bottom: 10px;
+
+        font-size: 12px;
+
+    }
+
+
+    .tool-buttons {
+
+        display: grid;
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .tool-buttons button {
+
+        width: 100%;
+
+    }
+
+
+    .mood-buttons {
+
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+
+    .mood-btn {
+
+        width: 100%;
+
+    }
+
+}
