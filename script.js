@@ -1,37 +1,27 @@
 const playButton = document.getElementById("playButton");
 const stopButton = document.getElementById("stopButton");
-
 const darkBtn = document.getElementById("darkBtn");
 const neonBtn = document.getElementById("neonBtn");
-
 const status = document.getElementById("status");
 const currentTime = document.getElementById("currentTime");
 const progressBar = document.getElementById("progressBar");
 const visualizer = document.getElementById("visualizer");
-
 const drumVolume = document.getElementById("drumVolume");
 const bassVolume = document.getElementById("bassVolume");
 const leadVolume = document.getElementById("leadVolume");
 const variationVolume = document.getElementById("variationVolume");
-
 const drumValue = document.getElementById("drumValue");
 const bassValue = document.getElementById("bassValue");
 const leadValue = document.getElementById("leadValue");
 const variationValue = document.getElementById("variationValue");
-
 const codeDisplay = document.getElementById("codeDisplay");
-
 const copyButton = document.getElementById("copyButton");
 const downloadButton = document.getElementById("downloadButton");
 const shareButton = document.getElementById("shareButton");
-
 const toolStatus = document.getElementById("toolStatus");
-
 const pianoStatus = document.getElementById("pianoStatus");
-
 const currentMood = document.getElementById("currentMood");
 const moodButtons = document.querySelectorAll(".mood-btn");
-
 const ratingSection = document.getElementById("ratingSection");
 const stars = document.querySelectorAll(".star");
 const ratingText = document.getElementById("ratingText");
@@ -43,67 +33,41 @@ let selectedMood = "happy";
 let selectedRating = 0;
 let mixerUpdateTimer = null;
 
-
-/* =================================
-   STRUDEL
-================================= */
-
+/* STRUDEL*/
 initStrudel({
     prebake: () =>
         samples("github:tidalcycles/dirt-samples")
 });
 
-
-/* =================================
-   MOOD PATTERNS
-================================= */
-
+/* MOOD PATTERNS*/
 const moodPatterns = {
-
     happy: {
-
         drums: "bd bd ~ bd, ~ sd ~ sd, hh*8",
-
         bass: "c3 e3 g3 e3 f3 a3 c4 a3",
-
         lead: "c5 e5 g5 e5 d5 f5 a5 f5",
-
-        variation: "~ cp ~ cp, oh ~ oh ~"
-
-    },
-
-
+        variation: "~ cp ~ cp, oh ~ oh ~" },
     dark: {
-
         drums: "bd ~ bd ~, ~ sd ~ sd, hh*8",
-
         bass: "a1 a1 c2 a1, f1 f1 e1 e1",
         lead: "a4 ~ c5 ~ e5 d5 c5 ~",
-        variation: "~ ~ cp ~, ~ oh ~ ~"
-    },
+        variation: "~ ~ cp ~, ~ oh ~ ~"    },
     chill: {
         drums: "bd ~ ~ bd, ~ sd ~ ~, hh*4",
         bass: "a2 ~ e2 ~ f2 ~ c2 ~",
         lead: "a4 c5 ~ e5, g4 ~ e4 ~",
-        variation: "~ ~ cp ~, ~ ~ ~ oh"
-    },
+        variation: "~ ~ cp ~, ~ ~ ~ oh"  },
     energetic: {
         drums: "bd bd bd bd, sd ~ sd sd, hh*16",
         bass: "a2 a2 e3 e3 f2 f2 g2 g2",
         lead: "a4 c5 e5 g5 a5 g5 e5 c5",
-        variation: "cp cp ~ cp, oh oh ~ oh"
-    },
+        variation: "cp cp ~ cp, oh oh ~ oh"  },
     mysterious: {
         drums: "bd ~ ~ bd, ~ sd ~ ~, hh*8",
         bass: "a1 ~ c2 ~ e2 ~ d2 ~",
         lead: "a4 ~ b4 c5 ~ e5 d5 ~",
-        variation: "~ cp ~ ~, ~ oh ~ cp"
-    }
+        variation: "~ cp ~ ~, ~ oh ~ cp" }
 };
-/* =================================
-   VOLUME
-================================= */
-
+/* VOLUME*/
 function getVolumes() {
     return {
         drums: Number(drumVolume.value) / 100,
@@ -112,11 +76,7 @@ function getVolumes() {
         variation: Number(variationVolume.value) / 100
     };
 }
-
-/* =================================
-   CREATE SONG
-================================= */
-
+/* CREATE SONG*/
 function createSong() {
     const v = getVolumes();
     const mood = moodPatterns[selectedMood];
@@ -148,10 +108,7 @@ function createSong() {
             .gain(v.variation)
     );
 }
-/* =================================
-   LIVE STRUDEL CODE
-================================= */
-
+/* LIVE STRUDEL CODE*/
 function createSongCode() {
     const v = getVolumes();
     const mood = moodPatterns[selectedMood];
@@ -194,9 +151,7 @@ function updateCode() {
         codeDisplay.textContent = createSongCode();
     }
 }
-/* =================================
-   STOP CURRENT STRUDEL SONG
-================================= */
+/* STOP CURRENT STRUDEL SONG*/
 function stopCurrentSong() {
     try {
         if (currentSong) {
@@ -205,23 +160,15 @@ function stopCurrentSong() {
     } catch (error) {
         console.log(
             "Pattern stop:",
-            error
-        );
-    }
+            error );}
     try {
         hush();
     } catch (error) {
         console.log(
             "Hush:",
-            error
-        );
-    }
-    currentSong = null;
-}
-/* =================================
-   PLAY SONG
-================================= */
-
+            error ); }
+    currentSong = null; }
+/* PLAY SONG*/
 playButton.addEventListener(
     "click",
     () => {
@@ -248,8 +195,7 @@ playButton.addEventListener(
             );
             ratingSection.classList.remove(
                 "show"
-            );
-        }
+            );     }
         catch (error) {
             console.error(
                 "Strudel error:",
@@ -257,12 +203,9 @@ playButton.addEventListener(
             );
             status.textContent =
                 "Strudel audio error - check Console";
-        }
-    }
+        } }
 );
-/* =================================
-   TIMER
-================================= */
+/* TIMER */
 function updateTime() {
     if (!startTime) {
         return;
@@ -284,9 +227,7 @@ function updateTime() {
     progressBar.style.width =
         (elapsed / 30) * 100 + "%";
 }
-/* =================================
-   STOP BUTTON
-================================= */
+/* STOP BUTTON*/
 function stopSong() {
     stopCurrentSong();
     clearInterval(timer);
@@ -310,9 +251,7 @@ stopButton.addEventListener(
     "click",
     stopSong
 );
-/* =================================
-   DARK THEME
-================================= */
+/* DARK THEME*/
 darkBtn.addEventListener(
     "click",
     () => {
@@ -321,9 +260,7 @@ darkBtn.addEventListener(
         );
     }
 );
-/* =================================
-   NEON THEME
-================================= */
+/* NEON THEME*/
 neonBtn.addEventListener(
     "click",
     () => {
@@ -332,10 +269,7 @@ neonBtn.addEventListener(
         );
     }
 );
-/* =================================
-   LIVE MIXER
-================================= */
-
+/* LIVE MIXER*/
 function updateLiveMixer() {
     updateLabels();
     updateCode();
@@ -377,9 +311,7 @@ variationVolume.addEventListener(
     "input",
     updateLiveMixer
 );
-/* =================================
-   UPDATE MIXER LABELS
-================================= */
+/* UPDATE MIXER LABELS*/
 function updateLabels() {
     drumValue.textContent =
         drumVolume.value + "%";
@@ -390,17 +322,12 @@ function updateLabels() {
     variationValue.textContent =
         variationVolume.value + "%";
 }
-/* =================================
-   MOOD SELECTOR
-================================= */
-
+/* MOOD SELECTOR*/
 moodButtons.forEach(
     button => {
-
         button.addEventListener(
             "click",
             () => {
-
                 selectedMood =
                     button.dataset.mood;
                 currentMood.textContent =
@@ -409,17 +336,11 @@ moodButtons.forEach(
                     item => {
                         item.classList.remove(
                             "active"
-                        );
-                    }
-                );
+                        );}    );
                 button.classList.add(
                     "active"
                 );
                 updateCode();
-                /*
-                 * Change music immediately
-                 */
-
                 if (currentSong) {
                     const elapsed =
                         (Date.now() - startTime) /
@@ -430,39 +351,24 @@ moodButtons.forEach(
                     currentSong.play();
                     startTime =
                         Date.now() -
-                        (elapsed * 1000);
-                }
-            }
-        );
-    }
+                        (elapsed * 1000); }});   }
 );
-/* =================================
-   COPY STRUDEL CODE
-================================= */
-
+/* COPY STRUDEL CODE*/
 copyButton.addEventListener(
     "click",
     async () => {
-
         try {
             await navigator.clipboard.writeText(
                 createSongCode()
             );
             toolStatus.textContent =
-                "Strudel code copied to clipboard.";
-        }
+                "Strudel code copied to clipboard.";  }
         catch (error) {
             console.error(error);
             toolStatus.textContent =
-                "Could not copy code.";
-
-        }
-    }
+                "Could not copy code."; } }
 );
-/* =================================
-   DOWNLOAD CODE
-================================= */
-
+/* DOWNLOAD CODE */
 downloadButton.addEventListener(
     "click",
     () => {
@@ -472,8 +378,7 @@ downloadButton.addEventListener(
             new Blob(
                 [code],
                 {
-                    type: "text/plain"
-                }
+                    type: "text/plain" }
             );
         const url =
             URL.createObjectURL(file);
@@ -491,35 +396,24 @@ downloadButton.addEventListener(
             url
         );
         toolStatus.textContent =
-            "neon-night.strudel downloaded.";
-    }
+            "neon-night.strudel downloaded."; }
 );
-/* =================================
-   SHARE COMPOSITION
-================================= */
-
+/* SHARE COMPOSITION*/
 shareButton.addEventListener(
     "click",
     async () => {
-
         const params =
             new URLSearchParams({
-
                 drums:
                     drumVolume.value,
-
                 bass:
                     bassVolume.value,
-
                 lead:
                     leadVolume.value,
-
                 variation:
                     variationVolume.value,
-
                 mood:
                     selectedMood,
-
                 theme:
                     document.body.classList.contains(
                         "neon"
@@ -537,18 +431,12 @@ shareButton.addEventListener(
                 shareURL
             );
             toolStatus.textContent =
-                "Share link copied to clipboard.";
-        }
+                "Share link copied to clipboard.";    }
         catch (error) {
             toolStatus.textContent =
-                shareURL;
-        }
-    }
+                shareURL; }  }
 );
-/* =================================
-   LOAD SHARED COMPOSITION
-================================= */
-
+/* LOAD SHARED COMPOSITION*/
 function loadFromURL() {
     const params =
         new URLSearchParams(
@@ -558,24 +446,19 @@ function loadFromURL() {
         !params.has("drums") &&
         !params.has("mood")
     ) {
-        return;
-    }
+        return; }
     if (params.has("drums")) {
         drumVolume.value =
-            params.get("drums");
-    }
+            params.get("drums"); }
     if (params.has("bass")) {
         bassVolume.value =
-            params.get("bass");
-    }
+            params.get("bass"); }
     if (params.has("lead")) {
         leadVolume.value =
-            params.get("lead");
-    }
+            params.get("lead"); }
     if (params.has("variation")) {
         variationVolume.value =
-            params.get("variation");
-    }
+            params.get("variation"); }
     if (params.has("mood")) {
         const mood =
             params.get("mood");
@@ -586,86 +469,23 @@ function loadFromURL() {
                 mood.toUpperCase();
             moodButtons.forEach(
                 button => {
-
                     button.classList.toggle(
                         "active",
                         button.dataset.mood ===
                         mood
-                    );
-                }
-            );
-        }
-    }
+                    );});}}
     if (
         params.get("theme") ===
         "neon"
     ) {
         document.body.classList.add(
             "neon"
-        );
-    }
+        ); }
     updateLabels();
     updateCode();
     toolStatus.textContent =
-        "Composition loaded from shared link.";
-}
-/* =================================
-   SONG RATING
-================================= */
-
-stars.forEach(
-    star => {
-        star.addEventListener(
-            "click",
-            () => {
-                selectedRating =
-                    Number(
-                        star.dataset.rating
-                    );
-                stars.forEach(
-                    item => {
-                        const value =
-                            Number(
-                                item.dataset.rating
-                            );
-                        if (
-                            value <=
-                            selectedRating
-                        ) {
-                            item.classList.add(
-                                "selected"
-                            );
-                        }
-                        else {
-                            item.classList.remove(
-                                "selected"
-                            );
-                        }
-                    }
-                );
-                const messages = {
-                    1:
-                        "Not your vibe ",
-                    2:
-                        "Could be better",
-                    3:
-                        "Pretty good",
-                    4:
-                        "Really nice!",
-                    5:
-                        "You loved it! ★"
-                };
-                ratingText.textContent =
-                    messages[selectedRating];
-            }
-        );
-    }
-);
-
-/* =================================
-   MINI PIANO
-================================= */
-
+        "Composition loaded from shared link."; }
+/* MINI PIANO*/
 const noteFrequencies = {
     C4: 261.63,
     D4: 293.66,
@@ -677,10 +497,7 @@ const noteFrequencies = {
     C5: 523.25
 };
 let pianoAudio = null;
-/* =================================
-   PLAY PIANO NOTE
-================================= */
-
+/* PLAY PIANO NOTE */
 function playPianoNote(note) {
     if (!pianoAudio) {
         pianoAudio =
@@ -718,10 +535,7 @@ function playPianoNote(note) {
         pianoAudio.currentTime +
         0.7
     );
-
-
     oscillator.connect(gain);
-
     gain.connect(
         pianoAudio.destination
     );
@@ -731,10 +545,7 @@ function playPianoNote(note) {
         0.7
     );
 }
-/* =================================
-   PIANO BUTTONS
-================================= */
-
+/* PIANO BUTTONS */
 document
     .querySelectorAll(".key")
     .forEach(
@@ -755,22 +566,12 @@ document
                         note;
                     setTimeout(
                         () => {
-
                             key.classList.remove(
                                 "active"
-                            );
-
-                        },
+                            );    },
                         150
-                    );
-                }
-            );
-        }
-    );
-/* =================================
-   KEYBOARD PIANO
-================================= */
-
+                    );});}  );
+/*KEYBOARD PIANO */
 const keyboardNotes = {
     a: "C4",
     s: "D4",
@@ -810,12 +611,9 @@ document.addEventListener(
                 },
                 150
             );
-        }
-    }
+        }  }
 );
-/* =================================
-   INITIALIZE
-================================= */
+/* INITIALIZE*/
 updateLabels();
 updateCode();
 loadFromURL();

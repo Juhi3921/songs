@@ -97,4 +97,410 @@
         </section>
 
 
-       
+        <!-- MOOD -->
+
+        <section class="mood-section">
+
+            <div class="section-title">
+
+                <h2>MOOD</h2>
+
+                <span id="currentMood">
+                    HAPPY
+                </span>
+
+            </div>
+
+
+            <div class="mood-buttons">
+
+                <button
+                    class="mood-btn active"
+                    data-mood="happy">
+                    HAPPY
+                </button>
+
+                <button
+                    class="mood-btn"
+                    data-mood="dark">
+                    DARK
+                </button>
+
+                <button
+                    class="mood-btn"
+                    data-mood="chill">
+                    CHILL
+                </button>
+
+                <button
+                    class="mood-btn"
+                    data-mood="energetic">
+                    ENERGETIC
+                </button>
+
+                <button
+                    class="mood-btn"
+                    data-mood="mysterious">
+                    MYSTERIOUS
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- MIXER -->
+
+        <section class="mixer">
+
+            <h2>PART MIXER</h2>
+
+
+            <div class="mix-row">
+
+                <div class="mix-info">
+
+                    <span>01</span>
+
+                    <strong>
+                        DRUMS
+                    </strong>
+
+                </div>
+
+
+                <input
+                    type="range"
+                    id="drumVolume"
+                    min="0"
+                    max="100"
+                    value="80"
+                >
+
+
+                <span id="drumValue">
+                    80%
+                </span>
+
+            </div>
+
+
+            <div class="mix-row">
+
+                <div class="mix-info">
+
+                    <span>02</span>
+
+                    <strong>
+                        BASS
+                    </strong>
+
+                </div>
+
+
+                <input
+                    type="range"
+                    id="bassVolume"
+                    min="0"
+                    max="100"
+                    value="40"
+                >
+
+
+                <span id="bassValue">
+                    40%
+                </span>
+
+            </div>
+
+
+            <div class="mix-row">
+
+                <div class="mix-info">
+
+                    <span>03</span>
+
+                    <strong>
+                        LEAD
+                    </strong>
+
+                </div>
+
+
+                <input
+                    type="range"
+                    id="leadVolume"
+                    min="0"
+                    max="100"
+                    value="25"
+                >
+
+
+                <span id="leadValue">
+                    25%
+                </span>
+
+            </div>
+
+
+            <div class="mix-row">
+
+                <div class="mix-info">
+
+                    <span>04</span>
+
+                    <strong>
+                        VARIATION
+                    </strong>
+
+                </div>
+
+
+                <input
+                    type="range"
+                    id="variationVolume"
+                    min="0"
+                    max="100"
+                    value="30"
+                >
+
+
+                <span id="variationValue">
+                    30%
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- MINI PIANO -->
+
+        <section class="piano-section">
+
+            <div class="section-title">
+
+                <h2>
+                    MINI PIANO
+                </h2>
+
+                <span>
+                    PLAY NOTES
+                </span>
+
+            </div>
+
+
+            <div class="piano">
+
+                <button
+                    class="key"
+                    data-note="C4">
+                    C
+                </button>
+
+                <button
+                    class="key"
+                    data-note="D4">
+                    D
+                </button>
+
+                <button
+                    class="key"
+                    data-note="E4">
+                    E
+                </button>
+
+                <button
+                    class="key"
+                    data-note="F4">
+                    F
+                </button>
+
+                <button
+                    class="key"
+                    data-note="G4">
+                    G
+                </button>
+
+                <button
+                    class="key"
+                    data-note="A4">
+                    A
+                </button>
+
+                <button
+                    class="key"
+                    data-note="B4">
+                    B
+                </button>
+
+                <button
+                    class="key"
+                    data-note="C5">
+                    C
+                </button>
+
+            </div>
+
+
+            <p
+                class="piano-status"
+                id="pianoStatus">
+
+                Click a key to play a note
+
+            </p>
+
+        </section>
+
+
+        <!-- COMPOSITION TOOLS -->
+
+        <section class="tools">
+
+            <h2>
+                COMPOSITION TOOLS
+            </h2>
+
+
+            <div class="tool-buttons">
+
+                <button id="copyButton">
+                    COPY STRUDEL CODE
+                </button>
+
+                <button id="downloadButton">
+                    DOWNLOAD CODE
+                </button>
+
+                <button id="shareButton">
+                    SHARE COMPOSITION
+                </button>
+
+            </div>
+
+
+            <p id="toolStatus">
+                Copy, download or share your current composition.
+            </p>
+
+        </section>
+        <!-- PARTS -->
+
+        <section class="parts">
+
+            <div class="part">
+
+                <span>
+                    01
+                </span>
+
+                <h2>
+                    DRUMS
+                </h2>
+
+                <p>
+                    Kick, snare and hi-hat rhythm
+                </p>
+
+            </div>
+
+
+            <div class="part">
+
+                <span>
+                    02
+                </span>
+
+                <h2>
+                    BASS
+                </h2>
+
+                <p>
+                    Low synth groove
+                </p>
+
+            </div>
+
+
+            <div class="part">
+
+                <span>
+                    03
+                </span>
+
+                <h2>
+                    LEAD
+                </h2>
+
+                <p>
+                    Triangle synth melody
+                </p>
+
+            </div>
+
+
+            <div class="part">
+
+                <span>
+                    04
+                </span>
+
+                <h2>
+                    VARIATION
+                </h2>
+
+                <p>
+                    Clap and open hi-hat changes
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- LIVE STRUDEL CODE -->
+
+        <section class="code-section">
+
+            <div class="code-heading">
+
+                <h2>
+                    LIVE STRUDEL CODE
+                </h2>
+
+                <span>
+                    LIVE
+                </span>
+
+            </div>
+
+
+            <pre id="codeDisplay"></pre>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <p>
+                NEON NIGHT • STRUDEL MUSIC EXPERIMENT
+            </p>
+
+        </footer>
+
+    </main>
+
+
+    <!-- STRUDEL -->
+
+    <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
