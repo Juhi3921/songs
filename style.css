@@ -1,0 +1,366 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+:root {
+
+    --bg: #090909;
+    --card: #111111;
+    --border: #333333;
+
+    --text: #ffffff;
+    --muted: #888888;
+
+    --accent: #ffffff;
+
+}
+
+
+body {
+
+    min-height: 100vh;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    font-family: Arial, sans-serif;
+
+    padding: 40px 20px;
+
+    transition: 0.3s;
+
+}
+
+
+.music-app {
+
+    max-width: 850px;
+
+    margin: auto;
+
+}
+
+
+/* HEADER */
+
+header {
+
+    margin-bottom: 35px;
+
+}
+
+
+h1 {
+
+    font-size: 58px;
+
+    letter-spacing: 8px;
+
+    margin-bottom: 8px;
+
+}
+
+
+header p {
+
+    color: var(--muted);
+
+}
+
+
+.themes {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 20px;
+
+}
+
+
+button {
+
+    padding: 12px 24px;
+
+    border: 1px solid var(--text);
+
+    background: var(--text);
+
+    color: var(--bg);
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+button:hover {
+
+    opacity: 0.75;
+
+}
+
+
+/* PLAYER */
+
+.player {
+
+    border: 1px solid var(--border);
+
+    padding: 30px;
+
+    background: var(--card);
+
+}
+
+
+.visualizer {
+
+    height: 130px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+}
+
+
+.bar {
+
+    width: 10px;
+
+    height: 35px;
+
+    background: var(--accent);
+
+}
+
+
+.playing .bar:nth-child(1) {
+
+    animation: bars 0.5s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(2) {
+
+    animation: bars 0.7s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(3) {
+
+    animation: bars 0.4s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(4) {
+
+    animation: bars 0.6s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(5) {
+
+    animation: bars 0.45s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(6) {
+
+    animation: bars 0.8s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(7) {
+
+    animation: bars 0.55s infinite alternate;
+
+}
+
+
+.playing .bar:nth-child(8) {
+
+    animation: bars 0.65s infinite alternate;
+
+}
+
+
+@keyframes bars {
+
+    from {
+
+        height: 30px;
+
+    }
+
+    to {
+
+        height: 110px;
+
+    }
+
+}
+
+
+.time {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.progress {
+
+    width: 100%;
+
+    height: 4px;
+
+    background: #333;
+
+    margin-bottom: 22px;
+
+}
+
+
+#progressBar {
+
+    height: 100%;
+
+    width: 0%;
+
+    background: var(--accent);
+
+    transition: width 0.1s linear;
+
+}
+
+
+.buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+
+.status {
+
+    margin-top: 18px;
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+}
+
+
+/* COMMON SECTION */
+
+.section-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+
+}
+
+
+.section-title h2 {
+
+    font-size: 18px;
+
+    letter-spacing: 3px;
+
+}
+
+
+.section-title span {
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+}
+
+
+/* MOOD */
+
+.mood-section {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+}
+
+
+.mood-buttons {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+
+.mood-btn {
+
+    background: transparent;
+
+    color: var(--text);
+
+    border: 1px solid var(--border);
+
+    padding: 12px 18px;
+
+}
+
+
+.mood-btn:hover,
+.mood-btn.active {
+
+    background: var(--text);
+
+    color: var(--bg);
+
+}
+
+
