@@ -32,17 +32,13 @@ const pianoStatus = document.getElementById("pianoStatus");
 const currentMood = document.getElementById("currentMood");
 const moodButtons = document.querySelectorAll(".mood-btn");
 
-const ratingSection = document.getElementById("ratingSection");
-const stars = document.querySelectorAll(".star");
-const ratingText = document.getElementById("ratingText");
-
 
 let timer = null;
 let startTime = null;
-let currentSong = null;
-let selectedMood = "happy";
-let selectedRating = 0;
+let isPlaying = false;
 let mixerUpdateTimer = null;
+
+let selectedMood = "happy";
 
 
 /* =================================
@@ -58,7 +54,7 @@ initStrudel({
 
 
 /* =================================
-   MOOD PATTERNS
+   MOODS
 ================================= */
 
 const moodPatterns = {
@@ -181,14 +177,16 @@ function getVolumes() {
 
 function createSong() {
 
-    const v = getVolumes();
+    const volume = getVolumes();
 
     const mood = moodPatterns[selectedMood];
 
-    const leadSynth =
+
+    const leadSound =
         selectedMood === "mysterious"
             ? "sine"
             : "triangle";
+
 
     const filter =
         selectedMood === "dark"
@@ -198,22 +196,33 @@ function createSong() {
 
     return stack(
 
+        /* DRUMS */
+
         s(mood.drums)
-            .gain(v.drums),
+            .gain(volume.drums),
+
+
+        /* BASS */
 
         note(mood.bass)
             .s("sawtooth")
             .lpf(filter)
-            .gain(v.bass),
+            .gain(volume.bass),
+
+
+        /* LEAD */
 
         note(mood.lead)
-            .s(leadSynth)
+            .s(leadSound)
             .attack(0.02)
             .release(0.2)
-            .gain(v.lead),
+            .gain(volume.lead),
+
+
+        /* VARIATION */
 
         s(mood.variation)
-            .gain(v.variation)
+            .gain(volume.variation)
 
     );
 
@@ -221,19 +230,21 @@ function createSong() {
 
 
 /* =================================
-   STRUDEL CODE
+   LIVE CODE
 ================================= */
 
 function createSongCode() {
 
-    const v = getVolumes();
+    const volume = getVolumes();
 
     const mood = moodPatterns[selectedMood];
 
-    const leadSynth =
+
+    const leadSound =
         selectedMood === "mysterious"
             ? "sine"
             : "triangle";
+
 
     const filter =
         selectedMood === "dark"
@@ -250,22 +261,22 @@ stack(
 
   // DRUMS
   s("${mood.drums}")
-    .gain(${v.drums.toFixed(2)}),
+    .gain(${volume.drums.toFixed(2)}),
 
   // BASS
   note("${mood.bass}")
     .s("sawtooth")
     .lpf(${filter})
-    .gain(${v.bass.toFixed(2)}),
+    .gain(${volume.bass.toFixed(2)}),
 
   // LEAD
   note("${mood.lead}")
-    .s("${leadSynth}")
-    .gain(${v.lead.toFixed(2)}),
+    .s("${leadSound}")
+    .gain(${volume.lead.toFixed(2)}),
 
   // VARIATION
   s("${mood.variation}")
-    .gain(${v.variation.toFixed(2)})
+    .gain(${volume.variation.toFixed(2)})
 )
 `.trim();
 
@@ -288,7 +299,7 @@ function updateCode() {
    STOP STRUDEL
 ================================= */
 
-function stopCurrentSong() {
+function stopMusic() {
 
     try {
 
@@ -297,14 +308,41 @@ function stopCurrentSong() {
     } catch (error) {
 
         console.log(
-            "Could not stop Strudel:",
+            "Strudel stop:",
             error
         );
 
     }
 
 
-    currentSong = null;
+    isPlaying = false;
+
+
+    clearInterval(timer);
+
+    timer = null;
+
+
+    clearTimeout(
+        mixerUpdateTimer
+    );
+
+
+    if (visualizer) {
+
+        visualizer.classList.remove(
+            "playing"
+        );
+
+    }
+
+
+    if (status) {
+
+        status.textContent =
+            "Stopped";
+
+    }
 
 }
 
@@ -317,23 +355,42 @@ if (playButton) {
 
     playButton.addEventListener(
         "click",
-        () => {
+        async () => {
 
             try {
 
-                stopCurrentSong();
+                /*
+                 * Stop anything
+                 * already playing
+                 */
+
+                stopMusic();
 
 
-                currentSong =
+                /*
+                 * Create pattern
+                 */
+
+                const song =
                     createSong();
 
 
-                currentSong.play();
+                /*
+                 * Start pattern
+                 */
 
+                song.play();
+
+
+                isPlaying = true;
 
                 startTime =
                     Date.now();
 
+
+                /*
+                 * Start timer
+                 */
 
                 clearInterval(timer);
 
@@ -344,6 +401,10 @@ if (playButton) {
                         100
                     );
 
+
+                /*
+                 * UI
+                 */
 
                 if (status) {
 
@@ -358,15 +419,6 @@ if (playButton) {
 
                     visualizer.classList.add(
                         "playing"
-                    );
-
-                }
-
-
-                if (ratingSection) {
-
-                    ratingSection.classList.remove(
-                        "show"
                     );
 
                 }
@@ -397,13 +449,49 @@ if (playButton) {
 
 
 /* =================================
+   STOP BUTTON
+================================= */
+
+if (stopButton) {
+
+    stopButton.addEventListener(
+        "click",
+        () => {
+
+            stopMusic();
+
+
+            if (currentTime) {
+
+                currentTime.textContent =
+                    "00:00";
+
+            }
+
+
+            if (progressBar) {
+
+                progressBar.style.width =
+                    "0%";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =================================
    TIMER
 ================================= */
 
 function updateTime() {
 
-    if (!startTime) {
+    if (!isPlaying || !startTime) {
+
         return;
+
     }
 
 
@@ -415,7 +503,32 @@ function updateTime() {
 
     if (elapsed >= 30) {
 
-        stopSong();
+        stopMusic();
+
+
+        if (currentTime) {
+
+            currentTime.textContent =
+                "00:30";
+
+        }
+
+
+        if (progressBar) {
+
+            progressBar.style.width =
+                "100%";
+
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                "Song finished";
+
+        }
+
 
         return;
 
@@ -437,7 +550,8 @@ function updateTime() {
     if (progressBar) {
 
         progressBar.style.width =
-            (elapsed / 30) * 100 + "%";
+            (elapsed / 30) * 100 +
+            "%";
 
     }
 
@@ -445,78 +559,7 @@ function updateTime() {
 
 
 /* =================================
-   STOP
-================================= */
-
-function stopSong() {
-
-    stopCurrentSong();
-
-
-    clearInterval(timer);
-
-    clearTimeout(mixerUpdateTimer);
-
-
-    timer = null;
-
-
-    if (currentTime) {
-
-        currentTime.textContent =
-            "00:00";
-
-    }
-
-
-    if (progressBar) {
-
-        progressBar.style.width =
-            "0%";
-
-    }
-
-
-    if (visualizer) {
-
-        visualizer.classList.remove(
-            "playing"
-        );
-
-    }
-
-
-    if (status) {
-
-        status.textContent =
-            "Stopped";
-
-    }
-
-
-    if (ratingSection) {
-
-        ratingSection.classList.add(
-            "show"
-        );
-
-    }
-
-}
-
-
-if (stopButton) {
-
-    stopButton.addEventListener(
-        "click",
-        stopSong
-    );
-
-}
-
-
-/* =================================
-   DARK
+   THEME
 ================================= */
 
 if (darkBtn) {
@@ -534,10 +577,6 @@ if (darkBtn) {
 
 }
 
-
-/* =================================
-   NEON
-================================= */
 
 if (neonBtn) {
 
@@ -559,11 +598,18 @@ if (neonBtn) {
    MIXER
 ================================= */
 
-function updateLiveMixer() {
+function updateMixer() {
 
     updateLabels();
 
     updateCode();
+
+
+    if (!isPlaying) {
+
+        return;
+
+    }
 
 
     clearTimeout(
@@ -575,27 +621,41 @@ function updateLiveMixer() {
         setTimeout(
             () => {
 
-                if (!currentSong) {
+                /*
+                 * Remember position
+                 */
 
-                    return;
+                const elapsed =
+                    (Date.now() -
+                        startTime) /
+                    1000;
+
+
+                /*
+                 * Stop old pattern
+                 */
+
+                try {
+
+                    hush();
+
+                } catch (error) {
+
+                    console.log(error);
 
                 }
 
 
-                const elapsed =
-                    (Date.now() - startTime) /
-                    1000;
+                /*
+                 * Start new pattern
+                 */
+
+                createSong().play();
 
 
-                stopCurrentSong();
-
-
-                currentSong =
-                    createSong();
-
-
-                currentSong.play();
-
+                /*
+                 * Keep timer position
+                 */
 
                 startTime =
                     Date.now() -
@@ -612,7 +672,7 @@ if (drumVolume) {
 
     drumVolume.addEventListener(
         "input",
-        updateLiveMixer
+        updateMixer
     );
 
 }
@@ -622,7 +682,7 @@ if (bassVolume) {
 
     bassVolume.addEventListener(
         "input",
-        updateLiveMixer
+        updateMixer
     );
 
 }
@@ -632,7 +692,7 @@ if (leadVolume) {
 
     leadVolume.addEventListener(
         "input",
-        updateLiveMixer
+        updateMixer
     );
 
 }
@@ -642,8 +702,9 @@ if (variationVolume) {
 
     variationVolume.addEventListener(
         "input",
-        updateLiveMixer
+        updateMixer
     );
+
 
 }
 
@@ -689,7 +750,7 @@ function updateLabels() {
 
 
 /* =================================
-   MOODS
+   MOOD
 ================================= */
 
 moodButtons.forEach(
@@ -730,21 +791,31 @@ moodButtons.forEach(
                 updateCode();
 
 
-                if (currentSong) {
+                /*
+                 * Change music
+                 * immediately
+                 */
+
+                if (isPlaying) {
 
                     const elapsed =
-                        (Date.now() - startTime) /
+                        (Date.now() -
+                            startTime) /
                         1000;
 
 
-                    stopCurrentSong();
+                    try {
+
+                        hush();
+
+                    } catch (error) {
+
+                        console.log(error);
+
+                    }
 
 
-                    currentSong =
-                        createSong();
-
-
-                    currentSong.play();
+                    createSong().play();
 
 
                     startTime =
@@ -761,7 +832,7 @@ moodButtons.forEach(
 
 
 /* =================================
-   COPY CODE
+   COPY STRUDEL
 ================================= */
 
 if (copyButton) {
@@ -799,7 +870,7 @@ if (copyButton) {
 
 
 /* =================================
-   DOWNLOAD CODE
+   DOWNLOAD
 ================================= */
 
 if (downloadButton) {
@@ -808,37 +879,47 @@ if (downloadButton) {
         "click",
         () => {
 
-            const blob =
+            const file =
                 new Blob(
                     [createSongCode()],
                     {
-                        type: "text/plain"
+                        type:
+                            "text/plain"
                     }
                 );
 
 
             const url =
-                URL.createObjectURL(blob);
+                URL.createObjectURL(file);
 
 
             const link =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
 
             link.href = url;
+
 
             link.download =
                 "neon-night.strudel";
 
 
-            document.body.appendChild(link);
+            document.body.appendChild(
+                link
+            );
+
 
             link.click();
+
 
             link.remove();
 
 
-            URL.revokeObjectURL(url);
+            URL.revokeObjectURL(
+                url
+            );
 
 
             if (toolStatus) {
@@ -933,71 +1014,7 @@ if (shareButton) {
 
 
 /* =================================
-   RATING
-================================= */
-
-stars.forEach(
-    star => {
-
-        star.addEventListener(
-            "click",
-            () => {
-
-                selectedRating =
-                    Number(
-                        star.dataset.rating
-                    );
-
-
-                stars.forEach(
-                    item => {
-
-                        const value =
-                            Number(
-                                item.dataset.rating
-                            );
-
-
-                        item.classList.toggle(
-                            "selected",
-                            value <= selectedRating
-                        );
-
-                    }
-                );
-
-
-                const messages = {
-
-                    1: "Not your vibe 😅",
-
-                    2: "Could be better",
-
-                    3: "Pretty good",
-
-                    4: "Really nice!",
-
-                    5: "You loved it! ★"
-
-                };
-
-
-                if (ratingText) {
-
-                    ratingText.textContent =
-                        messages[selectedRating];
-
-                }
-
-            }
-        );
-
-    }
-);
-
-
-/* =================================
-   PIANO
+   MINI PIANO
 ================================= */
 
 const noteFrequencies = {
@@ -1064,13 +1081,15 @@ function playPianoNote(note) {
 
     gain.gain.linearRampToValueAtTime(
         0.3,
-        pianoAudio.currentTime + 0.02
+        pianoAudio.currentTime +
+        0.02
     );
 
 
     gain.gain.exponentialRampToValueAtTime(
         0.001,
-        pianoAudio.currentTime + 0.7
+        pianoAudio.currentTime +
+        0.7
     );
 
 
@@ -1085,7 +1104,8 @@ function playPianoNote(note) {
 
 
     oscillator.stop(
-        pianoAudio.currentTime + 0.7
+        pianoAudio.currentTime +
+        0.7
     );
 
 }
@@ -1108,7 +1128,9 @@ document
                         key.dataset.note;
 
 
-                    playPianoNote(note);
+                    playPianoNote(
+                        note
+                    );
 
 
                     key.classList.add(
@@ -1119,7 +1141,8 @@ document
                     if (pianoStatus) {
 
                         pianoStatus.textContent =
-                            "Playing " + note;
+                            "Playing " +
+                            note;
 
                     }
 
@@ -1171,7 +1194,9 @@ document.addEventListener(
 
 
         if (!note) {
+
             return;
+
         }
 
 
@@ -1182,11 +1207,15 @@ document.addEventListener(
             document.querySelector(
                 `[data-note="${note}"]`
             );
+
+
         if (key) {
 
             key.classList.add(
                 "active"
             );
+
+
             setTimeout(
                 () => {
 
@@ -1202,8 +1231,12 @@ document.addEventListener(
 
     }
 );
+
+
 /* =================================
-   INITIAL
+   START
 ================================= */
+
 updateLabels();
+
 updateCode();
