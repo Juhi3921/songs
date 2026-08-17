@@ -157,17 +157,7 @@ const moodPatterns = {
    STRUDEL INITIALIZATION
 ========================================= */
 
-initStrudel({
-
-    prebake: () => {
-
-        samples(
-            "github:tidalcycles/dirt-samples"
-        );
-
-    }
-
-});
+initStrudel();
 
 
 /* =========================================
@@ -175,56 +165,27 @@ initStrudel({
 ========================================= */
 
 async function prepareAudio() {
-
     try {
+        const ctx = getAudioContext();
 
-        if (
-            typeof getAudioContext ===
-            "function"
-        ) {
+        console.log("Before resume:", ctx.state);
 
-            const ctx =
-                getAudioContext();
-
-
-            console.log(
-                "Strudel AudioContext:",
-                ctx.state
-            );
-
-
-            if (
-                ctx.state !==
-                "running"
-            ) {
-
-                await ctx.resume();
-
-            }
-
-
-            audioReady =
-                ctx.state === "running";
-
-
-            console.log(
-                "Audio ready:",
-                audioReady
-            );
-
+        if (ctx.state === "suspended") {
+            await ctx.resume();
         }
 
-    }
+        console.log("After resume:", ctx.state);
 
-    catch (error) {
+        return ctx.state === "running";
 
+    } catch (error) {
         console.error(
-            "Audio initialization failed:",
+            "Could not start Strudel audio:",
             error
         );
 
+        return false;
     }
-
 }
 
 
@@ -517,56 +478,54 @@ if (playButton) {
 
             try {
 
-                /*
-                 * Browser audio must
-                 * start from a user action.
-                 */
+                // Start/resume browser audio
+                const audioStarted =
+                    await prepareAudio();
 
-                await prepareAudio();
+                if (!audioStarted) {
+
+                    if (status) {
+                        status.textContent =
+                            "Audio could not start";
+                    }
+
+                    console.error(
+                        "Strudel AudioContext did not start."
+                    );
+
+                    return;
+                }
 
 
-                /*
-                 * Stop previous pattern.
-                 */
-
+                // Stop anything already playing
                 try {
-
                     hush();
-
+                } catch (error) {
+                    console.log(
+                        "Nothing to stop:",
+                        error
+                    );
                 }
 
-                catch (error) {
 
-                    console.log(error);
-
-                }
-
-
-                /*
-                 * Create new song.
-                 */
-
+                // Create the current song
                 const song =
                     createSong();
 
 
-                /*
-                 * Start Strudel.
-                 */
-
+                // Play Strudel
                 song.play();
 
 
-                isPlaying =
-                    true;
-
+                // Update state
+                isPlaying = true;
 
                 startTime =
                     Date.now();
 
 
+                // Start timer
                 clearInterval(timer);
-
 
                 timer =
                     setInterval(
@@ -575,6 +534,7 @@ if (playButton) {
                     );
 
 
+                // Update UI
                 if (status) {
 
                     status.textContent =
@@ -591,6 +551,11 @@ if (playButton) {
                     );
 
                 }
+
+
+                console.log(
+                    "NEON NIGHT is playing"
+                );
 
             }
 
@@ -615,7 +580,6 @@ if (playButton) {
     );
 
 }
-
 
 /* =========================================
    STOP BUTTON
